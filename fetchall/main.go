@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"strings"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 
 func fetch(url string, ch chan<- string) {
 	start := time.Now()
-	resp, err := http.Get(url)
+	resp, err := http.Get(setPrefix(url))
 	if err != nil {
 		ch <- fmt.Sprint(err) // send to channel ch
 		return
@@ -38,4 +39,11 @@ func fetch(url string, ch chan<- string) {
 	}
 	secs := time.Since(start).Seconds()
 	ch <- fmt.Sprintf("%.2fs  %7d  %s", secs, nbytes, url)
+}
+
+func setPrefix(url string) string {
+	if !strings.HasPrefix(url, "http://") {
+		return "http://" + url
+	}
+	return url
 }

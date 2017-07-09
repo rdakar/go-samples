@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"os"
 	"io"
+	"strings"
 )
 
 func main() {
 	for _, url := range os.Args[1:] {
-		resp, err := http.Get(url)
+		resp, err := http.Get(setPrefix(url))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
 			os.Exit(1)
@@ -23,4 +24,11 @@ func main() {
 		}
 		fmt.Printf("Total bytes: %d\n", nbytes)
 	}
+}
+
+func setPrefix(url string) string {
+	if !strings.HasPrefix(url, "http://") {
+		return "http://" + url
+	}
+	return url
 }
